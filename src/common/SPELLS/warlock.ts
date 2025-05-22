@@ -573,6 +573,17 @@ const spells = {
     icon: 'inv-felhound3-shadow-mount',
   },
 
+  DOOM_DEBUFF: {
+    id: 460553, // Doom debuff applied by Demonbolt (current version)
+    name: 'Doom',
+    icon: 'spell_shadow_auraofdarkness',
+  },
+  DOOM_DAMAGE: {
+    id: 460553, // Doom damage event
+    name: 'Doom',
+    icon: 'spell_shadow_auraofdarkness',
+  },
+
   // Hellcaller hero talent
   WITHER_CAST: {
     id: 445468,
