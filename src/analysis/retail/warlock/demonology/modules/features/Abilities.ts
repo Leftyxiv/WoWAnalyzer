@@ -112,16 +112,6 @@ class Abilities extends SharedAbilities {
           recommendedEfficiency: 0.9,
         },
       },
-      // Doom is now a passive debuff applied by Demonbolt, not a cast spell
-      // {
-      //   spell: TALENTS.DOOM_TALENT.id,
-      //   category: SPELL_CATEGORY.ROTATIONAL,
-      //   gcd: {
-      //     base: 1500,
-      //   },
-      //   enabled: combatant.hasTalent(TALENTS.DOOM_TALENT),
-      //   buffSpellId: TALENTS.DOOM_TALENT.id,
-      // },
       {
         spell: SPELLS.SHADOW_BOLT_DEMO.id,
         category: SPELL_CATEGORY.ROTATIONAL,

@@ -1,5 +1,5 @@
 import { defineMessage } from '@lingui/core/macro';
-import { formatPercentage } from 'common/format';
+import { formatPercentage, formatNumber } from 'common/format';
 import React from 'react';
 import SPELLS from 'common/SPELLS';
 import TALENTS from 'common/TALENTS/warlock';
@@ -39,11 +39,11 @@ class Doom extends Analyzer {
     this.active = this.selectedCombatant.hasTalent(TALENTS.DOOM_TALENT);
 
     this.addEventListener(
-      Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.DOOM),
+      Events.applydebuff.by(SELECTED_PLAYER).spell(SPELLS.DOOM_DEBUFF),
       this.onDoomApply,
     );
     this.addEventListener(
-      Events.removedebuff.by(SELECTED_PLAYER).spell(SPELLS.DOOM),
+      Events.removedebuff.by(SELECTED_PLAYER).spell(SPELLS.DOOM_DEBUFF),
       this.onDoomRemove,
     );
     // Listen for Doom damage events (uses different spell ID than debuff)
@@ -82,21 +82,7 @@ class Doom extends Analyzer {
   }
 
   get uptime() {
-    return this.enemies.getBuffUptime(SPELLS.DOOM.id) / this.owner.fightDuration;
-  }
-
-  get doomHitsPerExpire() {
-    return this.doom.removeDebuffCount > 0 ? this.doom.hits / this.doom.removeDebuffCount : 0;
-  }
-
-  get doomDamagePerExpire() {
-    return this.doom.removeDebuffCount > 0 ? this.doom.damage / this.doom.removeDebuffCount : 0;
-  }
-
-  get doomApplicationRate() {
-    return this.demonboltWithCoreCasts > 0
-      ? this.doom.applyDebuffCount / this.demonboltWithCoreCasts
-      : 0;
+    return this.enemies.getBuffUptime(SPELLS.DOOM_DEBUFF.id) / this.owner.fightDuration;
   }
 
   get suggestionThresholds() {
@@ -115,13 +101,13 @@ class Doom extends Analyzer {
     when(this.suggestionThresholds).addSuggestion((suggest, actual, recommended) =>
       suggest(
         <>
-          Your <SpellLink spell={TALENTS.DOOM_TALENT} /> uptime can be improved. Doom is a 20-second
+          Your <SpellLink spell={SPELLS.DOOM_DEBUFF} /> uptime can be improved. Doom is a 20-second
           debuff automatically applied by <SpellLink spell={SPELLS.DEMONBOLT} /> when it consumes a{' '}
           <SpellLink spell={SPELLS.DEMONIC_CORE_BUFF} />, so maintaining high uptime requires
           consistent Demonic Core generation and usage.
         </>,
       )
-        .icon(TALENTS.DOOM_TALENT.icon)
+        .icon(SPELLS.DOOM_DEBUFF.icon)
         .actual(
           defineMessage({
             id: 'warlock.demonology.suggestions.doom.uptime',
@@ -137,9 +123,15 @@ class Doom extends Analyzer {
       <Statistic
         category={STATISTIC_CATEGORY.TALENTS}
         size="flexible"
-        tooltip="Doom tracking - 20s debuff applied by Demonbolt when consuming Demonic Core"
+        tooltip={
+          <>
+            {formatNumber(this.doom.damage)} damage
+            <br />
+            Doom tracking - 20s debuff applied by Demonbolt when consuming Demonic Core
+          </>
+        }
       >
-        <BoringSpellValueText spell={TALENTS.DOOM_TALENT}>
+        <BoringSpellValueText spell={SPELLS.DOOM_DEBUFF}>
           <ItemDamageDone amount={this.doom.damage} />
           <br />
           <UptimeIcon /> {formatPercentage(this.uptime)}% <small>Uptime</small>

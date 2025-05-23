@@ -574,7 +574,7 @@ const spells = {
   },
 
   // Doom spell (passive debuff applied by Demonbolt when consuming Demonic Core)
-  DOOM: {
+  DOOM_DEBUFF: {
     id: 460553, // Current Doom spell ID
     name: 'Doom',
     icon: 'spell_shadow_auraofdarkness',

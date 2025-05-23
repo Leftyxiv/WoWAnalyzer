@@ -538,7 +538,7 @@ const talents = {
     definitionIds: [{ id: 130682, specId: 266 }],
   },
   DOOM_TALENT: {
-    id: 460553, // Use the current Doom spell ID
+    id: 460551,
     name: 'Doom',
     icon: 'spell_shadow_auraofdarkness',
     maxRanks: 1,
