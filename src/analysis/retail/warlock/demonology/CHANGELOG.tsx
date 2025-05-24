@@ -1,7 +1,7 @@
 import { change, date } from 'common/changelog';
 import SPELLS from 'common/SPELLS';
 import { TALENTS_WARLOCK } from 'common/TALENTS';
-import { Sharrq, Zeboot, Meldris, ToppleTheNun, Jonfanz, Mae, dodse, Arlie, Putro, Zyer, Gazh} from 'CONTRIBUTORS';
+import { Sharrq, Zeboot, Meldris, ToppleTheNun, Jonfanz, Mae, dodse, Arlie, Putro, Zyer, Gazh, Leftyxiv} from 'CONTRIBUTORS';
 import { SpellLink } from 'interface';
 
 export default [
