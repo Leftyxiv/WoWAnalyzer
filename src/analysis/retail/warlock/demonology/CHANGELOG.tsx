@@ -5,7 +5,7 @@ import { Sharrq, Zeboot, Meldris, ToppleTheNun, Jonfanz, Mae, dodse, Arlie, Putr
 import { SpellLink } from 'interface';
 
 export default [
-  change(date(2024, 12, 19), <>Add statistics for <SpellLink spell={TALENTS_WARLOCK.THE_HOUNDMASTERS_GAMBIT_TALENT}/> dreadstalker damage while vilefiend is active and <SpellLink spell={TALENTS_WARLOCK.WICKED_MAW_TALENT}/>/<SpellLink spell={TALENTS_WARLOCK.SHADOWTOUCHED_TALENT}/> damage increase</>, ToppleTheNun),
+  change(date(2024, 5, 24), <>Add statistics for <SpellLink spell={TALENTS_WARLOCK.THE_HOUNDMASTERS_GAMBIT_TALENT}/> dreadstalker damage while vilefiend is active and <SpellLink spell={TALENTS_WARLOCK.WICKED_MAW_TALENT}/>/<SpellLink spell={TALENTS_WARLOCK.SHADOWTOUCHED_TALENT}/> damage increase</>, ToppleTheNun),
   change(date(2024, 10, 1), <>Add support for <SpellLink spell={SPELLS.DEMONIC_HEALTHSTONE} /> </>, Gazh),
   change(date(2024, 9, 28), <>Add support for <SpellLink spell={TALENTS_WARLOCK.MARK_OF_FHARG_TALENT}/> & <SpellLink spell={TALENTS_WARLOCK.MARK_OF_SHATUG_TALENT}/></>, Gazh),
   change(date(2024, 9, 26), "Add support for Hero Talents", Gazh),
