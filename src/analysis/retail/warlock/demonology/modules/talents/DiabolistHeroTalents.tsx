@@ -1,17 +1,28 @@
 import { formatPercentage, formatThousands } from 'common/format';
 import TALENTS from 'common/TALENTS/warlock';
 import { SpellLink } from 'interface';
-import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
+import Analyzer, { Options, SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/Analyzer';
 import Events, { DamageEvent } from 'parser/core/Events';
+import Enemies from 'parser/shared/modules/Enemies';
 import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
 import ItemDamageDone from 'parser/ui/ItemDamageDone';
 import Statistic from 'parser/ui/Statistic';
 import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
 
+const WICKED_MAW_DEBUFF_ID = 270569;
+
 class DiabolistHeroTalents extends Analyzer {
+  static dependencies = {
+    enemies: Enemies,
+  };
+  enemies!: Enemies;
+
   wickedMawDamage = 0;
   shadowtouchedDamage = 0;
   totalDamage = 0;
+
+  wickedMawHits = 0;
+  shadowtouchedHits = 0;
 
   constructor(options: Options) {
     super(options);
@@ -20,38 +31,40 @@ class DiabolistHeroTalents extends Analyzer {
       this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT);
 
     if (this.active) {
-      this.addEventListener(Events.damage.by(SELECTED_PLAYER), this.onDamage);
+      this.addEventListener(Events.damage.by(SELECTED_PLAYER), this.onPlayerDamage);
+      this.addEventListener(Events.damage.by(SELECTED_PLAYER_PET), this.onPetDamage);
     }
   }
 
-  onDamage(event: DamageEvent) {
+  onPlayerDamage(event: DamageEvent) {
     this.totalDamage += event.amount + (event.absorbed || 0);
 
-    // For hero talents, we estimate damage increases based on their passive effects
-    // This is an approximation since we can't directly measure the separate components
-
-    if (this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT)) {
-      // Wicked Maw: Enemies take 25% more damage from us
-      // This means if we deal X damage, the actual base was X / 1.25
-      const baseDamage = (event.amount + (event.absorbed || 0)) / 1.25;
-      this.wickedMawDamage += event.amount + (event.absorbed || 0) - baseDamage;
-    }
-
-    if (this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT)) {
-      // Shadowtouched: Adds flat 20 damage modifier to certain abilities
-      // This is harder to calculate precisely, so we estimate based on spell types
-      // For now, we'll use a conservative estimate for shadow/demonic spells
-      if (this.isShadowOrDemonicSpell(event.ability.guid)) {
-        this.shadowtouchedDamage += 20; // Flat damage increase per cast
+    const enemy = this.enemies.getEntity(event);
+    if (enemy && enemy.hasBuff(WICKED_MAW_DEBUFF_ID)) {
+      // Calculate Wicked Maw damage increase (20% additional Shadowflame damage to debuffed enemies)
+      if (this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT)) {
+        const damage = event.amount + (event.absorbed || 0);
+        const baseDamage = damage / 1.2;
+        this.wickedMawDamage += damage - baseDamage;
+        this.wickedMawHits++;
       }
     }
   }
 
-  private isShadowOrDemonicSpell(spellId: number): boolean {
-    // List of spell IDs that would benefit from Shadowtouched
-    // This is a simplified approach - in reality we'd need to track specific spell schools
-    // For now, return true for a basic estimation
-    return true; // Simplified - assume all spells can benefit
+  onPetDamage(event: DamageEvent) {
+    this.totalDamage += event.amount + (event.absorbed || 0);
+
+    const enemy = this.enemies.getEntity(event);
+    if (enemy && enemy.hasBuff(WICKED_MAW_DEBUFF_ID)) {
+      // Shadowtouched: Additional 20% Shadow damage from demons ONLY to Wicked Maw targets
+      // This is additional Shadow damage on top of the base damage, regardless of original school
+      if (this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT)) {
+        const damage = event.amount + (event.absorbed || 0);
+        const baseDamageWithoutShadowtouched = damage / 1.2;
+        this.shadowtouchedDamage += damage - baseDamageWithoutShadowtouched;
+        this.shadowtouchedHits++;
+      }
+    }
   }
 
   get combinedDamageIncrease() {
@@ -61,6 +74,10 @@ class DiabolistHeroTalents extends Analyzer {
   get damageIncreasePercentage() {
     if (this.totalDamage === 0) return 0;
     return this.combinedDamageIncrease / this.totalDamage;
+  }
+
+  get wickedMawUptime() {
+    return this.enemies.getBuffUptime(WICKED_MAW_DEBUFF_ID) / this.owner.fightDuration;
   }
 
   statistic() {
@@ -75,15 +92,22 @@ class DiabolistHeroTalents extends Analyzer {
         size="flexible"
         tooltip={
           <>
-            {formatThousands(this.combinedDamageIncrease)} additional damage
+            <strong>Diabolist Hero Talents:</strong>
+            <br />
+            {formatThousands(this.combinedDamageIncrease)} additional damage from Diabolist talents
             {hasWickedMaw && hasShadowtouched && (
               <>
                 <br />
+                <br />
                 <SpellLink spell={TALENTS.WICKED_MAW_TALENT} />:{' '}
-                {formatThousands(this.wickedMawDamage)} damage
+                {formatThousands(this.wickedMawDamage)} damage ({this.wickedMawHits} enhanced hits)
                 <br />
                 <SpellLink spell={TALENTS.SHADOWTOUCHED_TALENT} />:{' '}
-                {formatThousands(this.shadowtouchedDamage)} damage
+                {formatThousands(this.shadowtouchedDamage)} damage ({this.shadowtouchedHits}{' '}
+                enhanced hits)
+                <br />
+                <br />
+                Wicked Maw uptime: {formatPercentage(this.wickedMawUptime)}%
               </>
             )}
           </>
@@ -95,6 +119,12 @@ class DiabolistHeroTalents extends Analyzer {
           <ItemDamageDone amount={this.combinedDamageIncrease} />
           <br />
           {formatPercentage(this.damageIncreasePercentage)}% <small>damage increase</small>
+          {hasWickedMaw && (
+            <>
+              <br />
+              <small>{formatPercentage(this.wickedMawUptime)}% debuff uptime</small>
+            </>
+          )}
         </BoringSpellValueText>
       </Statistic>
     );

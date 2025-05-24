@@ -52,7 +52,6 @@ class TheHoundmastersGambit extends Analyzer {
   }
 
   get vilefiendUptime() {
-    // Calculate total uptime of any vilefiend variant
     let totalUptime = 0;
     const timeline = this.demoPets.timeline.timeline;
 
