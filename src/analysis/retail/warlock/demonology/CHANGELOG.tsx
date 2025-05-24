@@ -5,6 +5,7 @@ import { Sharrq, Zeboot, Meldris, ToppleTheNun, Jonfanz, Mae, dodse, Arlie, Putr
 import { SpellLink } from 'interface';
 
 export default [
+  change(date(2025, 5, 23), <>Enhanced <SpellLink spell={SPELLS.CHARHOUND_SUMMON} /> and <SpellLink spell={SPELLS.GLOOMHOUND_SUMMON} /> tracking with cast efficiency, damage breakdown, and pet ability monitoring</>, Leftyxiv),
   change(date(2025, 5, 23), <>Implemented <SpellLink spell={SPELLS.DOOM_DEBUFF} /> tracking - monitors uptime, damage, and application rate for the new Doom talent</>, Leftyxiv),
   change(date(2024, 10, 1), <>Add support for <SpellLink spell={SPELLS.DEMONIC_HEALTHSTONE} /> </>, Gazh),
   change(date(2024, 9, 28), <>Add support for <SpellLink spell={TALENTS_WARLOCK.MARK_OF_FHARG_TALENT}/> & <SpellLink spell={TALENTS_WARLOCK.MARK_OF_SHATUG_TALENT}/></>, Gazh),
