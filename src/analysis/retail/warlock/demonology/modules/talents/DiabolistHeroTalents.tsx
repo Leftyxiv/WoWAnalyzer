@@ -93,7 +93,8 @@ class DiabolistHeroTalents extends Analyzer {
           <>
             <strong>Diabolist Hero Talents:</strong>
             <br />
-            {formatThousands(this.combinedDamageIncrease)} additional damage from Diabolist talents
+            {formatThousands(this.combinedDamageIncrease)} additional damage from Wicked Maw and
+            Shadowtouched
             {hasWickedMaw && hasShadowtouched && (
               <>
                 <br />
