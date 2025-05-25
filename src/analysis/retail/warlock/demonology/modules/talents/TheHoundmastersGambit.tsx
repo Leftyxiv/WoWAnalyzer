@@ -74,26 +74,24 @@ class TheHoundmastersGambit extends Analyzer {
     return this.dreadstalkerDamageWhileVilefiendActive / this.totalDreadstalkerDamage;
   }
 
-  get vilefiendVariantsUsed() {
+  get activeVilefiendVariant() {
     const timeline = this.demoPets.timeline.timeline;
-    const variants = new Set();
 
     for (const pet of timeline) {
       if (pet.guid === PETS.VILEFIEND.guid) {
-        variants.add('Vilefiend');
+        return 'Vilefiend';
       } else if (pet.guid === PETS.CHARHOUND.guid) {
-        variants.add('Charhound');
+        return 'Charhound';
       } else if (pet.guid === PETS.GLOOMHOUND.guid) {
-        variants.add('Gloomhound');
+        return 'Gloomhound';
       }
     }
 
-    return Array.from(variants);
+    return 'None';
   }
 
   statistic() {
-    const variants = this.vilefiendVariantsUsed;
-    const variantText = variants.length > 0 ? variants.join(', ') : 'None';
+    const variant = this.activeVilefiendVariant;
 
     return (
       <Statistic
@@ -104,7 +102,7 @@ class TheHoundmastersGambit extends Analyzer {
             <strong>Empowered Dreadstalker Analysis:</strong>
             <br />
             {formatThousands(this.dreadstalkerDamageWhileVilefiendActive)} damage from Dreadstalkers
-            while Vilefiend was active
+            while {this.activeVilefiendVariant} was active
             <br />
             {formatThousands(this.totalDreadstalkerDamage)} total Dreadstalker damage
             <br />
@@ -117,7 +115,7 @@ class TheHoundmastersGambit extends Analyzer {
             Dreadstalker damage
             <br />
             <br />
-            <strong>Vilefiend variants used:</strong> {variantText}
+            <strong>Vilefiend variant used:</strong> {variant}
             <br />
             <br />
             <SpellLink spell={TALENTS.THE_HOUNDMASTERS_GAMBIT_TALENT} /> empowers your Dreadstalkers
