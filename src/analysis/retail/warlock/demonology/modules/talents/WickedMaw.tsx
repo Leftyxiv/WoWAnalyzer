@@ -26,13 +26,14 @@ class WickedMaw extends Analyzer {
 
   constructor(options: Options) {
     super(options);
-    this.active =
-      this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT) ||
-      this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT);
+    this.active = this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT);
 
     if (this.active) {
       this.addEventListener(Events.damage.by(SELECTED_PLAYER), this.onPlayerDamage);
-      this.addEventListener(Events.damage.by(SELECTED_PLAYER_PET), this.onPetDamage);
+      // Only track pet damage if shadowtouched is present
+      if (this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT)) {
+        this.addEventListener(Events.damage.by(SELECTED_PLAYER_PET), this.onPetDamage);
+      }
     }
   }
 
@@ -42,12 +43,10 @@ class WickedMaw extends Analyzer {
     const enemy = this.enemies.getEntity(event);
     if (enemy && enemy.hasBuff(WICKED_MAW_DEBUFF_ID)) {
       // Calculate Wicked Maw damage increase (20% additional Shadowflame damage to debuffed enemies)
-      if (this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT)) {
-        const damage = event.amount + (event.absorbed || 0);
-        const baseDamage = damage / 1.2;
-        this.wickedMawDamage += damage - baseDamage;
-        this.wickedMawHits++;
-      }
+      const damage = event.amount + (event.absorbed || 0);
+      const baseDamage = damage / 1.2;
+      this.wickedMawDamage += damage - baseDamage;
+      this.wickedMawHits++;
     }
   }
 
@@ -56,13 +55,11 @@ class WickedMaw extends Analyzer {
 
     const enemy = this.enemies.getEntity(event);
     if (enemy && enemy.hasBuff(WICKED_MAW_DEBUFF_ID)) {
-      // Shadowtouched: Additional 20% Shadow damage from demons ONLY to Wicked Maw targets
-      if (this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT)) {
-        const damage = event.amount + (event.absorbed || 0);
-        const baseDamageWithoutShadowtouched = damage / 1.2;
-        this.shadowtouchedDamage += damage - baseDamageWithoutShadowtouched;
-        this.shadowtouchedHits++;
-      }
+      // Shadowtouched: Additional 20% Shadow damage from demons to Wicked Maw targets
+      const damage = event.amount + (event.absorbed || 0);
+      const baseDamageWithoutShadowtouched = damage / 1.2;
+      this.shadowtouchedDamage += damage - baseDamageWithoutShadowtouched;
+      this.shadowtouchedHits++;
     }
   }
 
@@ -82,7 +79,6 @@ class WickedMaw extends Analyzer {
   statistic() {
     if (!this.active) return null;
 
-    const hasWickedMaw = this.selectedCombatant.hasTalent(TALENTS.WICKED_MAW_TALENT);
     const hasShadowtouched = this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT);
 
     return (
@@ -91,18 +87,15 @@ class WickedMaw extends Analyzer {
         size="flexible"
         tooltip={
           <>
-            <strong>Wicked Maw & Shadowtouched:</strong>
+            <strong>Wicked Maw{hasShadowtouched ? ' & Shadowtouched' : ''}:</strong>
             <br />
-            {formatThousands(this.combinedDamageIncrease)} additional damage from these talents
+            {formatThousands(this.combinedDamageIncrease)} additional damage from{' '}
+            {hasShadowtouched ? 'these talents' : 'this talent'}
             <br />
             <br />
-            {hasWickedMaw && (
-              <>
-                <SpellLink spell={TALENTS.WICKED_MAW_TALENT} />:{' '}
-                {formatThousands(this.wickedMawDamage)} damage ({this.wickedMawHits} enhanced hits)
-                <br />
-              </>
-            )}
+            <SpellLink spell={TALENTS.WICKED_MAW_TALENT} />: {formatThousands(this.wickedMawDamage)}{' '}
+            damage ({this.wickedMawHits} enhanced hits)
+            <br />
             {hasShadowtouched && (
               <>
                 <SpellLink spell={TALENTS.SHADOWTOUCHED_TALENT} />:{' '}
@@ -111,27 +104,24 @@ class WickedMaw extends Analyzer {
                 <br />
               </>
             )}
-            {hasWickedMaw && (
+            <br />
+            Wicked Maw uptime: {formatPercentage(this.wickedMawUptime)}%
+            {hasShadowtouched && (
               <>
                 <br />
-                Wicked Maw uptime: {formatPercentage(this.wickedMawUptime)}%
+                <br />
+                <strong>Note:</strong> Shadowtouched requires Wicked Maw debuff to function.
               </>
             )}
           </>
         }
       >
-        <BoringSpellValueText
-          spell={hasWickedMaw ? TALENTS.WICKED_MAW_TALENT : TALENTS.SHADOWTOUCHED_TALENT}
-        >
+        <BoringSpellValueText spell={TALENTS.WICKED_MAW_TALENT}>
           <ItemDamageDone amount={this.combinedDamageIncrease} />
           <br />
           {formatPercentage(this.damageIncreasePercentage)}% <small>damage increase</small>
-          {hasWickedMaw && (
-            <>
-              <br />
-              <small>{formatPercentage(this.wickedMawUptime)}% debuff uptime</small>
-            </>
-          )}
+          <br />
+          <small>{formatPercentage(this.wickedMawUptime)}% debuff uptime</small>
         </BoringSpellValueText>
       </Statistic>
     );
