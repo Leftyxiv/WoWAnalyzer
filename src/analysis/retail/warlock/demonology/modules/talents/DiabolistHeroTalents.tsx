@@ -57,7 +57,6 @@ class DiabolistHeroTalents extends Analyzer {
     const enemy = this.enemies.getEntity(event);
     if (enemy && enemy.hasBuff(WICKED_MAW_DEBUFF_ID)) {
       // Shadowtouched: Additional 20% Shadow damage from demons ONLY to Wicked Maw targets
-      // This is additional Shadow damage on top of the base damage, regardless of original school
       if (this.selectedCombatant.hasTalent(TALENTS.SHADOWTOUCHED_TALENT)) {
         const damage = event.amount + (event.absorbed || 0);
         const baseDamageWithoutShadowtouched = damage / 1.2;
