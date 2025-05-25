@@ -11,7 +11,7 @@ import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
 
 const WICKED_MAW_DEBUFF_ID = 270569;
 
-class DiabolistHeroTalents extends Analyzer {
+class WickedMaw extends Analyzer {
   static dependencies = {
     enemies: Enemies,
   };
@@ -91,21 +91,28 @@ class DiabolistHeroTalents extends Analyzer {
         size="flexible"
         tooltip={
           <>
-            <strong>Diabolist Hero Talents:</strong>
+            <strong>Wicked Maw & Shadowtouched:</strong>
             <br />
-            {formatThousands(this.combinedDamageIncrease)} additional damage from Wicked Maw and
-            Shadowtouched
-            {hasWickedMaw && hasShadowtouched && (
+            {formatThousands(this.combinedDamageIncrease)} additional damage from these talents
+            <br />
+            <br />
+            {hasWickedMaw && (
               <>
-                <br />
-                <br />
                 <SpellLink spell={TALENTS.WICKED_MAW_TALENT} />:{' '}
                 {formatThousands(this.wickedMawDamage)} damage ({this.wickedMawHits} enhanced hits)
                 <br />
+              </>
+            )}
+            {hasShadowtouched && (
+              <>
                 <SpellLink spell={TALENTS.SHADOWTOUCHED_TALENT} />:{' '}
                 {formatThousands(this.shadowtouchedDamage)} damage ({this.shadowtouchedHits}{' '}
                 enhanced hits)
                 <br />
+              </>
+            )}
+            {hasWickedMaw && (
+              <>
                 <br />
                 Wicked Maw uptime: {formatPercentage(this.wickedMawUptime)}%
               </>
@@ -131,4 +138,4 @@ class DiabolistHeroTalents extends Analyzer {
   }
 }
 
-export default DiabolistHeroTalents;
+export default WickedMaw;
