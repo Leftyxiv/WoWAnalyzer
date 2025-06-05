@@ -469,10 +469,20 @@ const spells = {
     name: 'Summon Charhound',
     icon: 'inv_felhound3_shadow_fire',
   },
+  CHARHOUND_INFERNAL_PRESENCE: {
+    id: 428455,
+    name: 'Infernal Presence',
+    icon: 'spell_fire_meteorstorm',
+  },
   GLOOMHOUND_SUMMON: {
     id: 455465,
     name: 'Summon Gloomhound',
     icon: 'inv_felhound3_shadow_mount',
+  },
+  GLOOMHOUND_GLOOM_SLASH: {
+    id: 455491,
+    name: 'Gloom Slash',
+    icon: 'ability_rogue_shadowstrike',
   },
   IMP_SINGE_MAGIC: {
     id: 119905,
