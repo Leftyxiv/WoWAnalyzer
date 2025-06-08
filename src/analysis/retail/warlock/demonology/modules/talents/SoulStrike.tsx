@@ -39,28 +39,22 @@ class SoulStrike extends Analyzer {
         category={STATISTIC_CATEGORY.TALENTS}
         size="flexible"
         tooltip={
-          <>
-            {formatThousands(this.damage)} damage
-            <br />
+          <ul>
+            <li>{formatThousands(this.damage)} damage</li>
             {shardsWasted > 0 && (
-              <>
-                <br />
-                {shardsWasted.toFixed(1)} shards wasted due to overcapping
-              </>
+              <li>{shardsWasted.toFixed(1)} shards wasted due to overcapping</li>
             )}
-          </>
+          </ul>
         }
       >
         <BoringSpellValueText spell={TALENTS.SOUL_STRIKE_TALENT}>
           <ItemDamageDone amount={this.damage} />
-          <br />
-          {shardsGained} <small>Shards generated</small>
-          {shardsWasted > 0 && (
-            <>
-              <br />
-              {shardsWasted.toFixed(1)} <small>Shards wasted</small>
-            </>
-          )}
+          <ul>
+            <li>{shardsGained} <small>Shards generated</small></li>
+            {shardsWasted > 0 && (
+              <li>{shardsWasted.toFixed(1)} <small>Shards wasted</small></li>
+            )}
+          </ul>
         </BoringSpellValueText>
       </Statistic>
     );
