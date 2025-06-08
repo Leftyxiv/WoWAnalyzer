@@ -41,7 +41,6 @@ class SoulStrike extends Analyzer {
   handleSoulStrikeShardGen(event: ResourceChangeEvent) {
     if (event.resourceChangeType === RESOURCE_TYPES.SOUL_SHARDS.id) {
       this.totalCasts += 1;
-
       // Check if player was at shard cap (5 shards = 50 fragments)
       // The event shows the state AFTER the resource change, so we need to check if waste > 0
       if (event.waste > 0) {
