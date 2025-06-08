@@ -33,16 +33,34 @@ class SoulStrike extends Analyzer {
 
   statistic() {
     const shardsGained = this.soulShardTracker.getGeneratedBySpell(SPELLS.SOUL_STRIKE_SHARD_GEN.id);
+    const shardsWasted = this.soulShardTracker.getWastedBySpell(SPELLS.SOUL_STRIKE_SHARD_GEN.id);
     return (
       <Statistic
         category={STATISTIC_CATEGORY.TALENTS}
         size="flexible"
-        tooltip={`${formatThousands(this.damage)} damage`}
+        tooltip={
+          <>
+            {formatThousands(this.damage)} damage
+            <br />
+            {shardsWasted > 0 && (
+              <>
+                <br />
+                {shardsWasted.toFixed(1)} shards wasted due to overcapping
+              </>
+            )}
+          </>
+        }
       >
         <BoringSpellValueText spell={TALENTS.SOUL_STRIKE_TALENT}>
           <ItemDamageDone amount={this.damage} />
           <br />
           {shardsGained} <small>Shards generated</small>
+          {shardsWasted > 0 && (
+            <>
+              <br />
+              {shardsWasted.toFixed(1)} <small>Shards wasted</small>
+            </>
+          )}
         </BoringSpellValueText>
       </Statistic>
     );
