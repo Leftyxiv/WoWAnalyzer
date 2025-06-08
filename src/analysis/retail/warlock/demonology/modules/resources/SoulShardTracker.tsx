@@ -42,11 +42,13 @@ class SoulShardTracker extends ResourceTracker {
   }
 
   getAdjustedGain(event: ResourceChangeEvent): { gain: number; waste: number } {
-    const { gain, waste } = super.getAdjustedGain(event);
-    return {
-      gain: gain / 10,
-      waste: waste / 10,
-    };
+    // The parent class calculates gain as (resourceChange - waste)
+    // But we need to work with the raw values from the event
+    const waste = event.waste / 10;
+    const totalChange = event.resourceChange / 10;
+    const gain = totalChange - waste;
+
+    return { gain, waste };
   }
 }
 
