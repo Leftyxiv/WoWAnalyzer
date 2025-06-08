@@ -72,4 +72,3 @@ coverage/*
 
 # #vitest/ui
 html/
-src/analysis/retail/warlock/demonology/modules/resources/SoulShardTracker.test.tsx
