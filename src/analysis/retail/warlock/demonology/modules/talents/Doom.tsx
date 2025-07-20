@@ -125,21 +125,23 @@ class Doom extends Analyzer {
     const explanation = (
       <>
         <SpellLink spell={TALENTS.DOOM_TALENT} /> is a powerful curse that is applied when{' '}
-        <SpellLink spell={SPELLS.DEMONBOLT} /> consumes a <SpellLink spell={SPELLS.DEMONIC_CORE_BUFF} />.
-        The curse deals damage immediately and explodes after 20 seconds for AoE damage. If Doom is 
-        already applied, consuming another Demonic Core reduces its duration by 3 seconds, making it 
-        explode sooner. High uptime is essential for maximizing damage from this talent.
+        <SpellLink spell={SPELLS.DEMONBOLT} /> consumes a{' '}
+        <SpellLink spell={SPELLS.DEMONIC_CORE_BUFF} />. The curse deals damage immediately and
+        explodes after 20 seconds for AoE damage. If Doom is already applied, consuming another
+        Demonic Core reduces its duration by 3 seconds, making it explode sooner. High uptime is
+        essential for maximizing damage from this talent.
       </>
     );
 
     // Determine performance based on uptime
-    const performance = this.uptime < this.suggestionThresholds.isLessThan.major 
-      ? QualitativePerformance.Fail 
-      : this.uptime < this.suggestionThresholds.isLessThan.average 
-      ? QualitativePerformance.Ok 
-      : this.uptime < this.suggestionThresholds.isLessThan.minor 
-      ? QualitativePerformance.Good 
-      : QualitativePerformance.Perfect;
+    const performance =
+      this.uptime < this.suggestionThresholds.isLessThan.major
+        ? QualitativePerformance.Fail
+        : this.uptime < this.suggestionThresholds.isLessThan.average
+          ? QualitativePerformance.Ok
+          : this.uptime < this.suggestionThresholds.isLessThan.minor
+            ? QualitativePerformance.Good
+            : QualitativePerformance.Perfect;
 
     return (
       <SubSection title="Doom">

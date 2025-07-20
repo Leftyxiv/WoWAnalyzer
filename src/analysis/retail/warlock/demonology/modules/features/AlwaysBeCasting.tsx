@@ -50,8 +50,8 @@ class AlwaysBeCasting extends CoreAlwaysBeCasting {
     const explanation = (
       <>
         Maintaining high uptime is crucial for maximizing DPS as a Demonology Warlock. Try to always
-        be casting something - there should be minimal downtime between spell casts. When you need to
-        move, use instant abilities like <SpellLink spell={SPELLS.DEMONBOLT} /> (with{' '}
+        be casting something - there should be minimal downtime between spell casts. When you need
+        to move, use instant abilities like <SpellLink spell={SPELLS.DEMONBOLT} /> (with{' '}
         <SpellLink spell={SPELLS.DEMONIC_CORE_BUFF} />) or utilize{' '}
         <SpellLink spell={SPELLS.DEMONIC_CIRCLE} /> and{' '}
         <SpellLink spell={TALENTS.BURNING_RUSH_TALENT} /> to minimize movement downtime.

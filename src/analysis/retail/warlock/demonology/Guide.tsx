@@ -20,11 +20,7 @@ export default function Guide({ modules, events, info }: GuideProps<typeof Comba
 }
 
 function CoreSection({ modules }: GuideProps<typeof CombatLogParser>) {
-  return (
-    <Section title="Core">
-      {modules.alwaysBeCasting.guideSubsection}
-    </Section>
-  );
+  return <Section title="Core">{modules.alwaysBeCasting.guideSubsection}</Section>;
 }
 
 function CooldownSection({ modules }: GuideProps<typeof CombatLogParser>) {
