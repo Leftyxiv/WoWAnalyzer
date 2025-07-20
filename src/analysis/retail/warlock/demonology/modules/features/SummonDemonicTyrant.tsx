@@ -320,6 +320,47 @@ class SummonDemonicTyrant extends Analyzer {
     };
   }
 
+  private getHoundsChecklistItem(tyrantCastNum: number) {
+    const castEvent = this.tyrantCasts[tyrantCastNum];
+    const charhounds = this.summsWithDemonicPower[tyrantCastNum]['Charhound'] || 0;
+    const gloomhounds = this.summsWithDemonicPower[tyrantCastNum]['Gloomhound'] || 0;
+    const vilefiends = this.summsWithDemonicPower[tyrantCastNum]['Vilefiend'] || 0;
+    const totalHounds = charhounds + gloomhounds + vilefiends;
+
+    const houndsPerformance =
+      totalHounds > 0 ? QualitativePerformance.Perfect : QualitativePerformance.Ok; // Not extending hounds is ok, but not optimal
+
+    const houndsSummary = (
+      <>
+        {totalHounds}/1 <SpellLink spell={TALENTS.SUMMON_VILEFIEND_TALENT} />
+      </>
+    );
+
+    const houndsDetails = (
+      <div>
+        {totalHounds}/1 <SpellLink spell={TALENTS.SUMMON_VILEFIEND_TALENT} /> - extending hounds
+        provides additional damage but is not always required
+        {totalHounds > 0 && (
+          <div style={{ fontSize: '0.9em', color: '#888', marginTop: '4px' }}>
+            {charhounds > 0 && `${charhounds} Charhound${charhounds > 1 ? 's' : ''}`}
+            {gloomhounds > 0 &&
+              `${charhounds > 0 ? ', ' : ''}${gloomhounds} Gloomhound${gloomhounds > 1 ? 's' : ''}`}
+            {vilefiends > 0 &&
+              `${charhounds > 0 || gloomhounds > 0 ? ', ' : ''}${vilefiends} Vilefiend${vilefiends > 1 ? 's' : ''}`}
+          </div>
+        )}
+      </div>
+    );
+
+    return {
+      check: 'hounds',
+      timestamp: castEvent.event.timestamp,
+      performance: houndsPerformance,
+      summary: houndsSummary,
+      details: houndsDetails,
+    };
+  }
+
   private getGFGChecklistItem(tyrantCastNum: number) {
     const castEvent = this.tyrantCasts[tyrantCastNum];
 
@@ -371,6 +412,9 @@ class SummonDemonicTyrant extends Analyzer {
 
     const imps = this.summsWithDemonicPower[tyrantCastNum]['Wild Imp'];
     checklistItems.push(this.getImpsChecklistItem(tyrantCastNum));
+
+    // Add hounds checklist item
+    checklistItems.push(this.getHoundsChecklistItem(tyrantCastNum));
 
     let goodGFG = true;
     if (this.hasGFG) {
