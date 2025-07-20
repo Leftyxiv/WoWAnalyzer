@@ -25,6 +25,8 @@ import EmbeddedTimelineContainer, {
   SpellTimeline,
 } from 'interface/report/Results/Timeline/EmbeddedTimeline';
 import SpellUsable from 'parser/shared/modules/SpellUsable';
+import PETS from '../pets/PETS';
+import { PetInfo } from 'parser/core/Pet';
 
 const debug = false;
 
@@ -55,6 +57,7 @@ class SummonDemonicTyrant extends Analyzer {
   private hasReignOfTyranny = false;
   private hasGFG = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private summsWithDemonicPower: Record<string, any>[] = [{}];
   private tyrantsCast = 0;
   private tyrantCasts: TyrantCast[] = [];
@@ -108,8 +111,9 @@ class SummonDemonicTyrant extends Analyzer {
     }
 
     // TODO low prio: fix main pet getting two applications of this buff in the same tyrant
-    this.summsWithDemonicPower[this.tyrantsCast][petInfo.name] =
-      this.summsWithDemonicPower[this.tyrantsCast][petInfo.name] + 1 || 1;
+    const petDisplayName = this.getPetDisplayName(petInfo);
+    this.summsWithDemonicPower[this.tyrantsCast][petDisplayName] =
+      this.summsWithDemonicPower[this.tyrantsCast][petDisplayName] + 1 || 1;
   }
 
   private onCast(event: CastEvent) {
@@ -124,6 +128,20 @@ class SummonDemonicTyrant extends Analyzer {
     event: BeginCastEvent | BeginChannelEvent | EndChannelEvent | GlobalCooldownEvent,
   ) {
     this.castTimeline.push(event);
+  }
+
+  private getPetDisplayName(petInfo: PetInfo): string {
+    // Differentiate between Vilefiend variants based on GUID
+    switch (petInfo.guid) {
+      case PETS.CHARHOUND.guid:
+        return 'Charhound';
+      case PETS.GLOOMHOUND.guid:
+        return 'Gloomhound';
+      case PETS.VILEFIEND.guid:
+        return 'Vilefiend';
+      default:
+        return petInfo.name;
+    }
   }
 
   private get numTyrCasts(): number {
