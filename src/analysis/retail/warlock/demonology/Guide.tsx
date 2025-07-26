@@ -4,14 +4,12 @@ import PreparationSection from 'interface/guide/components/Preparation/Preparati
 import CooldownSubsection from './modules/guide/CooldownsSubsection';
 import ResourceUsage from './modules/guide/ResourceUsage';
 import DefensivesGuide from '../shared/Defensives';
-import TALENTS from 'common/TALENTS/warlock';
 
 export default function Guide({ modules, events, info }: GuideProps<typeof CombatLogParser>) {
   return (
     <>
       <CoreSection modules={modules} events={events} info={info} />
       <CooldownSection modules={modules} events={events} info={info} />
-      <TalentSection modules={modules} events={events} info={info} />
       <DefensivesGuide modules={modules} events={events} info={info} />
       <ResourceUsage modules={modules} events={events} info={info} />
       <PreparationSection />
@@ -28,14 +26,6 @@ function CooldownSection({ modules }: GuideProps<typeof CombatLogParser>) {
     <Section title="Cooldowns">
       <CooldownSubsection />
       {modules.summonDemonicTyrant.guideSubsection}
-    </Section>
-  );
-}
-
-function TalentSection({ modules, info }: GuideProps<typeof CombatLogParser>) {
-  return (
-    <Section title="Talents">
-      {info.combatant.hasTalent(TALENTS.DOOM_TALENT) && modules.doom.guideSubsection}
     </Section>
   );
 }

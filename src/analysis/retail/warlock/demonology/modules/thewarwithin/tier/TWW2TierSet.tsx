@@ -2,10 +2,11 @@ import SPELLS from 'common/SPELLS';
 import { TIERS } from 'game/TIERS';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, { CastEvent } from 'parser/core/Events';
-import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
+import BoringItemSetValueText from 'parser/ui/BoringItemSetValueText';
 import Statistic from 'parser/ui/Statistic';
 import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
 import { SpellLink } from 'interface';
+import { WARLOCK_TWW2_ID } from 'common/ITEMS/dragonflight';
 
 import DemoPets from '../../pets/DemoPets';
 import PETS from '../../pets/PETS';
@@ -56,34 +57,11 @@ class TWW2TierSet extends Analyzer {
       Events.cast.by(SELECTED_PLAYER).spell(SPELLS.CALL_GREATER_DREADSTALKER),
       this.onJackpotProc,
     );
-
-    // Also try listening for any spell containing "Greater" or "Jackpot" in case ID is different
-    this.addEventListener(Events.cast.by(SELECTED_PLAYER), this.onAnyCast);
-
-    // No need to track summons or damage - focus on proc counting
   }
 
   onJackpotProc(event: CastEvent) {
     // This is the actual Call Greater Dreadstalker proc from tier set
     this.jackpotProcs += 1;
-  }
-
-  onAnyCast(event: CastEvent) {
-    // Look for any spell that might be related to Jackpot or Greater Dreadstalker
-    const spellName = event.ability.name;
-    if (
-      spellName.toLowerCase().includes('jackpot') ||
-      spellName.toLowerCase().includes('greater') ||
-      spellName.toLowerCase().includes('dreadstalker')
-    ) {
-      // If it's not the ID we're already tracking, count it as a potential Jackpot proc
-      if (
-        event.ability.guid !== SPELLS.CALL_GREATER_DREADSTALKER.id &&
-        spellName.toLowerCase().includes('greater')
-      ) {
-        this.jackpotProcs += 1;
-      }
-    }
   }
 
   onTyrantCast(event: CastEvent) {
@@ -156,9 +134,7 @@ class TWW2TierSet extends Analyzer {
           </>
         }
       >
-        <BoringSpellValueText spell={SPELLS.CALL_GREATER_DREADSTALKER}>
-          <small>TWW Season 2 Tier Set</small>
-          <br />
+        <BoringItemSetValueText setId={WARLOCK_TWW2_ID} title="TWW Season 2 Tier Set">
           {this.jackpotProcs}{' '}
           <small>
             <SpellLink spell={SPELLS.CALL_GREATER_DREADSTALKER} /> procs
@@ -173,7 +149,7 @@ class TWW2TierSet extends Analyzer {
               <br />
             </>
           )}
-        </BoringSpellValueText>
+        </BoringItemSetValueText>
       </Statistic>
     );
   }
