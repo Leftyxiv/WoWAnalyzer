@@ -18,9 +18,6 @@ import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
 import ItemDamageDone from 'parser/ui/ItemDamageDone';
 import Statistic from 'parser/ui/Statistic';
 import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
-import { SubSection } from 'interface/guide';
-import PerformanceStrong from 'interface/PerformanceStrong';
-import { QualitativePerformance } from 'parser/ui/QualitativePerformance';
 
 class Doom extends Analyzer {
   static dependencies = {
@@ -118,46 +115,6 @@ class Doom extends Analyzer {
           }),
         )
         .recommended(`>${formatPercentage(recommended)}% is recommended`),
-    );
-  }
-
-  get guideSubsection(): JSX.Element {
-    const explanation = (
-      <>
-        <SpellLink spell={TALENTS.DOOM_TALENT} /> is a powerful curse that is applied when{' '}
-        <SpellLink spell={SPELLS.DEMONBOLT} /> consumes a{' '}
-        <SpellLink spell={SPELLS.DEMONIC_CORE_BUFF} />. The curse deals damage immediately and
-        explodes after 20 seconds for AoE damage. If Doom is already applied, consuming another
-        Demonic Core reduces its duration by 3 seconds, making it explode sooner. High uptime is
-        essential for maximizing damage from this talent.
-      </>
-    );
-
-    // Determine performance based on uptime
-    const performance =
-      this.uptime < this.suggestionThresholds.isLessThan.major
-        ? QualitativePerformance.Fail
-        : this.uptime < this.suggestionThresholds.isLessThan.average
-          ? QualitativePerformance.Ok
-          : this.uptime < this.suggestionThresholds.isLessThan.minor
-            ? QualitativePerformance.Good
-            : QualitativePerformance.Perfect;
-
-    return (
-      <SubSection title="Doom">
-        {explanation}
-        <p>
-          Doom Uptime:{' '}
-          <PerformanceStrong performance={performance}>
-            {formatPercentage(this.uptime, 1)}%
-          </PerformanceStrong>
-        </p>
-        <p>
-          <small>
-            Applications: {this.doom.applyDebuffCount} | Damage: {formatNumber(this.doom.damage)}
-          </small>
-        </p>
-      </SubSection>
     );
   }
 
