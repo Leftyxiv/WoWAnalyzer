@@ -1,7 +1,7 @@
 import SPELLS from 'common/SPELLS';
 import { TIERS } from 'game/TIERS';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
-import Events, { CastEvent } from 'parser/core/Events';
+import Events, { CastEvent, SummonEvent } from 'parser/core/Events';
 import BoringItemSetValueText from 'parser/ui/BoringItemSetValueText';
 import Statistic from 'parser/ui/Statistic';
 import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
@@ -46,26 +46,16 @@ class TWW2TierSet extends Analyzer {
       this.onHandOfGuldanCast,
     );
 
-    // Backup: Track Tyrant casts since they guarantee Jackpot procs
+    // Listen for the actual Jackpot proc summon (Greater Dreadstalkers)
+    // Using summon event to track actual summons, not just casts
     this.addEventListener(
-      Events.cast.by(SELECTED_PLAYER).spell(SPELLS.SUMMON_DEMONIC_TYRANT),
-      this.onTyrantCast,
-    );
-
-    // Listen for the actual Jackpot proc spell (Call Greater Dreadstalker)
-    this.addEventListener(
-      Events.cast.by(SELECTED_PLAYER).spell(SPELLS.CALL_GREATER_DREADSTALKER),
+      Events.summon.by(SELECTED_PLAYER).spell(SPELLS.CALL_GREATER_DREADSTALKER),
       this.onJackpotProc,
     );
   }
 
-  onJackpotProc(event: CastEvent) {
-    // This is the actual Call Greater Dreadstalker proc from tier set
-    this.jackpotProcs += 1;
-  }
-
-  onTyrantCast(event: CastEvent) {
-    // Tyrant casts guarantee Jackpot procs according to tier set description
+  onJackpotProc(event: SummonEvent) {
+    // This is the actual Greater Dreadstalker summon from tier set Jackpot proc
     this.jackpotProcs += 1;
   }
 
