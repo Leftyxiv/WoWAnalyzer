@@ -1,11 +1,13 @@
 import SPELLS from 'common/SPELLS';
+import TALENTS from 'common/TALENTS/warlock';
 import { TIERS } from 'game/TIERS';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, { CastEvent, SummonEvent } from 'parser/core/Events';
-import BoringItemSetValueText from 'parser/ui/BoringItemSetValueText';
+import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
 import Statistic from 'parser/ui/Statistic';
 import STATISTIC_CATEGORY from 'parser/ui/STATISTIC_CATEGORY';
 import { SpellLink } from 'interface';
+import ItemSetLink from 'interface/ItemSetLink';
 import { WARLOCK_TWW2_ID } from 'common/ITEMS/dragonflight';
 
 import DemoPets from '../../pets/DemoPets';
@@ -29,6 +31,7 @@ class TWW2TierSet extends Analyzer {
   protected demoPets!: DemoPets;
 
   private jackpotProcs = 0;
+  private tyrantCasts = 0;
   private handOfGuldanCasts = 0;
   private empoweredHandOfGuldanCasts = 0;
 
@@ -46,12 +49,23 @@ class TWW2TierSet extends Analyzer {
       this.onHandOfGuldanCast,
     );
 
+    // Track Tyrant casts to know when procs are from Tyrant
+    this.addEventListener(
+      Events.cast.by(SELECTED_PLAYER).spell(TALENTS.SUMMON_DEMONIC_TYRANT_TALENT),
+      this.onTyrantCast,
+    );
+
     // Listen for the actual Jackpot proc summon (Greater Dreadstalkers)
     // Using summon event to track actual summons, not just casts
     this.addEventListener(
       Events.summon.by(SELECTED_PLAYER).spell(SPELLS.CALL_GREATER_DREADSTALKER),
       this.onJackpotProc,
     );
+  }
+
+  onTyrantCast(event: CastEvent) {
+    // Count Tyrant casts (each one guarantees a Jackpot proc)
+    this.tyrantCasts += 1;
   }
 
   onJackpotProc(event: SummonEvent) {
@@ -98,7 +112,9 @@ class TWW2TierSet extends Analyzer {
           <>
             <strong>2-Set Bonus (Jackpot!):</strong>
             <ul>
-              <li>Jackpot! procs: {this.jackpotProcs}</li>
+              <li>Total Jackpot! procs: {this.jackpotProcs}</li>
+              <li>Random procs: {this.jackpotProcs - this.tyrantCasts}</li>
+              <li>Tyrant procs: {this.tyrantCasts}</li>
               <li>Summons Greater Dreadstalkers at 265% effectiveness</li>
             </ul>
             {this.has4Piece && (
@@ -124,11 +140,12 @@ class TWW2TierSet extends Analyzer {
           </>
         }
       >
-        <BoringItemSetValueText setId={WARLOCK_TWW2_ID} title="TWW Season 2 Tier Set">
-          {this.jackpotProcs}{' '}
+        <BoringSpellValueText spell={SPELLS.CALL_GREATER_DREADSTALKER}>
           <small>
-            <SpellLink spell={SPELLS.CALL_GREATER_DREADSTALKER} /> procs
+            <ItemSetLink id={WARLOCK_TWW2_ID}>TWW Season 2 Tier Set</ItemSetLink>
           </small>
+          <br />
+          {this.jackpotProcs} <small>procs</small>
           <br />
           {this.has4Piece && (
             <>
@@ -139,7 +156,7 @@ class TWW2TierSet extends Analyzer {
               <br />
             </>
           )}
-        </BoringItemSetValueText>
+        </BoringSpellValueText>
       </Statistic>
     );
   }
