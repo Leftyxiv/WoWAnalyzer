@@ -826,6 +826,44 @@ const spells = {
     name: 'Doom Bolt Volley',
     icon: 'spell_shadow_shadowbolt',
   },
+  // TWW S3 Manaforge Omega Tier Set (11.2)
+  // Diabolist Hero Talent
+  DEMONIC_OCULUS_SUMMON: {
+    id: 1238810,
+    name: 'Demonic Oculus',
+    icon: 'spell_warlock_demonicportal_green',
+  },
+  DEMONIC_OCULUS_EXPLOSION: {
+    id: 457548,
+    name: 'Demonic Oculus',
+    icon: 'spell_warlock_demonicportal_green',
+  },
+  DEMONIC_ART_BUFF: {
+    id: 457686,
+    name: 'Demonic Art',
+    icon: 'spell_warlock_demonicportal_green',
+  },
+  OCULUS_INTELLECT_BUFF: {
+    id: 457736,
+    name: 'Ocular Analysis',
+    icon: 'spell_warlock_demonicportal_green',
+  },
+  // Soul Harvester Hero Talent
+  SHADOW_OF_DEATH_CAST: {
+    id: 457735,
+    name: 'Shadow of Death',
+    icon: 'spell_shadow_shadesofdarkness',
+  },
+  DEMONIC_SOUL_DAMAGE: {
+    id: 457739,
+    name: 'Demonic Soul',
+    icon: 'spell_shadow_shadesofdarkness',
+  },
+  SHADOW_OF_DEATH_BUFF: {
+    id: 457737,
+    name: 'Shadow of Death',
+    icon: 'spell_shadow_shadesofdarkness',
+  },
 
   // -----------
   // DESTRUCTION
