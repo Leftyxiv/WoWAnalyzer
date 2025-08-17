@@ -715,11 +715,6 @@ export const Khadaj: Contributor = {
   avatar: avatar('khadaj-avatar.jpg'),
   mains: [
     {
-      name: 'Khadaj',
-      spec: SPECS.HOLY_PRIEST,
-      link: 'https://worldofwarcraft.com/en-us/character/firetree/khadaj',
-    },
-    {
       name: 'RatherBeBelf',
       spec: SPECS.HOLY_PRIEST,
       link: '',
@@ -1591,17 +1586,10 @@ export const Pendragon: Contributor = {
   ],
 };
 
-export const acornellier: Contributor = {
-  nickname: 'acornellier',
+export const ortemis: Contributor = {
+  nickname: 'Ortemis',
   github: 'acornellier',
-  discord: 'Ortemis#3934',
-  mains: [
-    {
-      name: 'Ortemis',
-      spec: SPECS.HOLY_PALADIN,
-      link: 'https://worldofwarcraft.com/en-us/character/us/sargeras/ortemis',
-    },
-  ],
+  discord: 'Ortemis',
 };
 
 export const Akai: Contributor = {
@@ -2731,6 +2719,7 @@ export const Leftyxiv: Contributor = {
   nickname: 'Manny',
   github: 'Leftyxiv',
   discord: 'onearmmanny',
+  avatar: avatar('leftyxiv-avatar.png'),
   mains: [
     {
       name: 'Magicmushies',

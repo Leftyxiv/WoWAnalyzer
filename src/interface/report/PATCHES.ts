@@ -37,7 +37,7 @@ const PATCHES: Patch[] = [
     name: '4.4.0',
     timestamp: 1716242400000, // GMT: Monday, 20 May 2024 22:00:00
     urlPrefix: '',
-    isCurrent: true,
+    isCurrent: false,
     gameVersion: 5, // Cataclysm
     expansion: Expansion.Cataclysm,
   },
@@ -85,9 +85,33 @@ const PATCHES: Patch[] = [
     name: '11.1.5',
     timestamp: 1745359200000, // GMT: Tuesday, 22 April 2025 22:00:00
     urlPrefix: '',
+    isCurrent: false,
+    gameVersion: 1, // retail
+    expansion: Expansion.TheWarWithin,
+  },
+  {
+    name: '11.1.7',
+    timestamp: 1750197600000, // GMT: Tue Jun 17 2025 22:00:00
+    urlPrefix: '',
+    isCurrent: false,
+    gameVersion: 1, // retail
+    expansion: Expansion.TheWarWithin,
+  },
+  {
+    name: '11.2.0',
+    timestamp: 1754431200000, // GMT: Tue Aug 05 2025 22:00:00
+    urlPrefix: '',
     isCurrent: true,
     gameVersion: 1, // retail
     expansion: Expansion.TheWarWithin,
+  },
+  {
+    name: '5.5.0',
+    timestamp: 0,
+    urlPrefix: '',
+    isCurrent: true,
+    gameVersion: 6,
+    expansion: Expansion.MistsOfPandaria,
   },
 ];
 

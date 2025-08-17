@@ -3,8 +3,8 @@ import GameBranch from './GameBranch';
 
 // The current version of the game. Used to check spec patch compatibility and as a caching key.
 const VERSIONS: Record<GameBranch, string> = {
-  [GameBranch.Classic]: '4.4.0',
-  [GameBranch.Retail]: '11.1.5',
+  [GameBranch.Classic]: '5.5.0',
+  [GameBranch.Retail]: '11.2.0',
 };
 
 export default VERSIONS;
@@ -19,6 +19,8 @@ export const wclGameVersionToExpansion = (gameVersion: number): Expansion => {
       return Expansion.WrathOfTheLichKing;
     case 5:
       return Expansion.Cataclysm;
+    case 6:
+      return Expansion.MistsOfPandaria;
     default:
       return Expansion.TheWarWithin;
   }
@@ -33,5 +35,5 @@ export const wclGameVersionToBranch = (gameVersion: number): GameBranch => {
 };
 
 export const isUnsupportedClassicVersion = (gameVersion: number): boolean => {
-  return gameVersion > 1 && gameVersion < 5;
+  return gameVersion > 1 && gameVersion <= 5;
 };

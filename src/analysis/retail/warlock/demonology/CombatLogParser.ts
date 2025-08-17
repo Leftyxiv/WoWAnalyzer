@@ -43,6 +43,7 @@ import TheHoundmastersGambit from './modules/talents/TheHoundmastersGambit';
 import WickedMaw from './modules/talents/WickedMaw';
 import Guide from './Guide';
 import T31AmirdrassilDemonology from './modules/dragonflight/tier/T31AmirdrassilDemonology';
+import TWW2TierSet from './modules/thewarwithin/tier/TWW2TierSet';
 import TWW3DiabolistTierSet from './modules/tier/TWW3DiabolistTierSet';
 import TWW3SoulHarvesterTierSet from './modules/tier/TWW3SoulHarvesterTierSet';
 import { UnendingResolve, DarkPact, DemonicCircle } from '../shared';
@@ -108,6 +109,7 @@ class CombatLogParser extends CoreCombatLogParser {
 
     // Tier
     t31AmirdrassilDemonology: T31AmirdrassilDemonology,
+    tww2TierSet: TWW2TierSet,
     tww3DiabolistTierSet: TWW3DiabolistTierSet,
     tww3SoulHarvesterTierSet: TWW3SoulHarvesterTierSet,
 
