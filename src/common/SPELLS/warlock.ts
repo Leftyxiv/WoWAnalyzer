@@ -838,6 +838,11 @@ const spells = {
     name: 'Demonic Oculus',
     icon: 'spell_warlock_demonicportal_green',
   },
+  EYE_BLAST: {
+    id: 1239510,
+    name: 'Eye Blast',
+    icon: 'spell_warlock_demonicportal_green',
+  },
   DEMONIC_ART_BUFF: {
     id: 457686,
     name: 'Demonic Art',

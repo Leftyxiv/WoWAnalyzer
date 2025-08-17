@@ -44,10 +44,10 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
 
   constructor(options: Options) {
     super(options);
-    // Check if player has TWW3 tier set (will need to update TIERS enum)
-    this.active = this.selectedCombatant.has2PieceByTier(TIERS.TWW3 ?? TIERS.TWW2);
+    // Check if player has TWW3 tier set
+    this.active = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
     this.has2Piece = this.active;
-    this.has4Piece = this.selectedCombatant.has4PieceByTier(TIERS.TWW3 ?? TIERS.TWW2);
+    this.has4Piece = this.selectedCombatant.has4PieceByTier(TIERS.TWW3);
 
     if (!this.active) {
       return;

@@ -5,6 +5,7 @@ import { Sharrq, Zeboot, Meldris, ToppleTheNun, Jonfanz, Mae, dodse, Arlie, Putr
 import { SpellLink } from 'interface';
 
 export default [
+  change(date(2025, 8, 17), <>Added support for patch 11.2 with TWW Season 3 Manaforge Omega tier sets. Implemented tracking for both Diabolist (<SpellLink spell={SPELLS.DEMONIC_OCULUS_SUMMON}/>) and Soul Harvester (<SpellLink spell={SPELLS.SHADOW_OF_DEATH_CAST}/>) hero talent tier bonuses. Added <SpellLink spell={SPELLS.EYE_BLAST}/> spell ID for tier set mechanics.</>, Leftyxiv),
   change(date(2025, 6, 17), <>Fixed <SpellLink spell={TALENTS_WARLOCK.SOUL_STRIKE_TALENT}/> to properly display wasted soul shards when overcapped</>, Leftyxiv),
   change(date(2025, 6, 5), <>Add statistics for <SpellLink spell={TALENTS_WARLOCK.THE_HOUNDMASTERS_GAMBIT_TALENT}/> dreadstalker damage while vilefiend is active and <SpellLink spell={TALENTS_WARLOCK.WICKED_MAW_TALENT}/>/<SpellLink spell={TALENTS_WARLOCK.SHADOWTOUCHED_TALENT}/> damage increase</>, Leftyxiv),
   change(date(2025, 5, 24), <>Enhanced <SpellLink spell={SPELLS.CHARHOUND_SUMMON} /> and <SpellLink spell={SPELLS.GLOOMHOUND_SUMMON} /> tracking with cast efficiency, damage breakdown, and pet ability monitoring</>, Leftyxiv),
