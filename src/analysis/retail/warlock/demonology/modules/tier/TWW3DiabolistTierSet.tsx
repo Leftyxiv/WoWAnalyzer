@@ -1,6 +1,8 @@
-import { formatPercentage } from 'common/format';
+import { formatNumber, formatPercentage } from 'common/format';
 import SPELLS from 'common/SPELLS';
 import { TIERS } from 'game/TIERS';
+import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
+import ItemSetLink from 'interface/ItemSetLink';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, {
   ApplyBuffEvent,
@@ -8,7 +10,6 @@ import Events, {
   DamageEvent,
   RefreshBuffEvent,
   RemoveBuffEvent,
-  SummonEvent,
 } from 'parser/core/Events';
 import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
 import ItemDamageDone from 'parser/ui/ItemDamageDone';
@@ -33,11 +34,10 @@ class TWW3DiabolistTierSet extends Analyzer {
   // Tracking for 2pc
   oculusSummons = 0;
   activeOculi = 0;
-  maxOculi = 0;
   oculusExplosions = 0;
   oculusDamage = 0;
-  demonicArtConsumes = 0;
-  oculiPerArt: number[] = [];
+  handOfGuldanCasts = 0;
+  fullPowerHandOfGuldanCasts = 0;
 
   // Tracking for 4pc
   intellectBuffStacks = 0;
@@ -62,12 +62,24 @@ class TWW3DiabolistTierSet extends Analyzer {
       Events.cast.by(SELECTED_PLAYER).spell(SPELLS.HAND_OF_GULDAN_CAST),
       this.onHandOfGuldan,
     );
+    // Track Oculus buff applications (each buff = 1 full power HoG)
     this.addEventListener(
-      Events.summon.by(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_SUMMON),
-      this.onOculusSummon,
+      Events.applybuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_BUFF),
+      this.onOculusBuff,
     );
+    // Track when Oculus buffs are removed (when they explode)
     this.addEventListener(
-      Events.removebuff.by(SELECTED_PLAYER).spell(SPELLS.DEMONIC_ART_BUFF),
+      Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_BUFF),
+      this.onOculusExplosion,
+    );
+    // Track when Demonic Art is consumed (buff removed from player)
+    this.addEventListener(
+      Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_ART_BUFF),
+      this.onDemonicArtConsume,
+    );
+    // Also track refreshes in case the buff is refreshed rather than removed
+    this.addEventListener(
+      Events.refreshbuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_ART_BUFF),
       this.onDemonicArtConsume,
     );
     this.addEventListener(
@@ -90,36 +102,37 @@ class TWW3DiabolistTierSet extends Analyzer {
         this.onIntellectBuffRefresh,
       );
       this.addEventListener(
-        Events.removebuff.from(SELECTED_PLAYER).spell(SPELLS.OCULUS_INTELLECT_BUFF),
+        Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.OCULUS_INTELLECT_BUFF),
         this.onIntellectBuffRemove,
       );
     }
   }
 
   onHandOfGuldan(event: CastEvent) {
-    // Check if it was a full power cast (3 shards)
-    const resource = event.classResources?.find(
-      (r) => r.type === 3, // Soul Shards resource type
-    );
-    if (resource && resource.cost && resource.cost >= 30) {
-      // Full power HoG costs 3 shards (30 in raw value)
-      // Oculus summon is handled by summon event
-    }
+    // Track all Hand of Gul'dan casts
+    this.handOfGuldanCasts += 1;
+    // Full power casts are tracked via the Oculus buff application
   }
 
-  onOculusSummon(event: SummonEvent) {
+  onOculusBuff(event: ApplyBuffEvent) {
+    // Each buff application means a full power (3-shard) Hand of Gul'dan was cast
+    this.fullPowerHandOfGuldanCasts += 1;
     this.oculusSummons += 1;
     this.activeOculi = Math.min(this.activeOculi + 1, 3);
-    if (this.activeOculi > this.maxOculi) {
-      this.maxOculi = this.activeOculi;
+  }
+
+  onOculusExplosion(event: RemoveBuffEvent) {
+    // When an Oculus buff is removed, it explodes
+    this.oculusExplosions += 1;
+    if (this.activeOculi > 0) {
+      this.activeOculi -= 1;
     }
   }
 
-  onDemonicArtConsume(event: RemoveBuffEvent) {
+  onDemonicArtConsume(event: RemoveBuffEvent | RefreshBuffEvent) {
+    // Track when Demonic Art triggers the explosions
     if (this.activeOculi > 0) {
-      this.demonicArtConsumes += 1;
-      this.oculiPerArt.push(this.activeOculi);
-      this.oculusExplosions += this.activeOculi;
+      // Reset active count since they all explode at once
       this.activeOculi = 0;
     }
   }
@@ -152,13 +165,6 @@ class TWW3DiabolistTierSet extends Analyzer {
       this.currentIntellectBuff = null;
     }
     this.intellectBuffStacks = 0;
-  }
-
-  get averageOculiPerArt() {
-    if (this.oculiPerArt.length === 0) {
-      return 0;
-    }
-    return this.oculiPerArt.reduce((a, b) => a + b, 0) / this.oculiPerArt.length;
   }
 
   get intellectBuffUptimePercent() {
@@ -194,26 +200,20 @@ class TWW3DiabolistTierSet extends Analyzer {
           <>
             <strong>2-piece:</strong>
             <br />
-            Oculus Summons: {this.oculusSummons}
+            Hand of Gul'dan Casts: {this.handOfGuldanCasts}
             <br />
-            Demonic Art Consumes: {this.demonicArtConsumes}
+            Full Power (3-shard) Casts: {this.fullPowerHandOfGuldanCasts}
+            <br />
+            Oculus Summons: {this.oculusSummons}
             <br />
             Total Explosions: {this.oculusExplosions}
             <br />
-            Average Oculi per Art: {this.averageOculiPerArt.toFixed(2)}
-            <br />
-            Max Oculi at once: {this.maxOculi}
-            <br />
-            <br />
             {this.has4Piece && (
               <>
+                <br />
                 <strong>4-piece:</strong>
                 <br />
-                Intellect Buff Applications: {this.intellectBuffApplications}
-                <br />
                 Intellect Buff Uptime: {formatPercentage(this.intellectBuffUptimePercent)}%
-                <br />
-                Average Intellect Stacks: {this.averageIntellectStacks.toFixed(1)}
                 <br />
                 Average Intellect Increase: {(this.averageIntellectStacks * 2).toFixed(1)}%
               </>
@@ -221,10 +221,13 @@ class TWW3DiabolistTierSet extends Analyzer {
           </>
         }
       >
-        <BoringSpellValueText spell={SPELLS.DEMONIC_OCULUS_SUMMON}>
-          <div>
-            {this.averageOculiPerArt.toFixed(1)} <small>avg. Oculi per Demonic Art</small>
-          </div>
+        <BoringSpellValueText spell={SPELLS.DEMONIC_OCULUS_BUFF}>
+          <small>
+            <ItemSetLink id={WARLOCK_TWW3_ID}>TWW Season 3 Tier Set (Diabolist)</ItemSetLink>
+          </small>
+          <br />
+          {formatNumber(this.oculusDamage)} <small>total damage</small>
+          <br />
           <ItemDamageDone amount={this.oculusDamage} />
           {this.has4Piece && (
             <div>

@@ -834,7 +834,7 @@ const spells = {
   },
   // TWW S3 Manaforge Omega Tier Set (11.2)
   // Diabolist Hero Talent
-  DEMONIC_OCULUS_SUMMON: {
+  DEMONIC_OCULUS_BUFF: {
     id: 1238810,
     name: 'Demonic Oculus',
     icon: 'spell_warlock_demonicportal_green',
@@ -861,8 +861,13 @@ const spells = {
   },
   // Soul Harvester Hero Talent
   SHADOW_OF_DEATH_CAST: {
-    id: 457735,
+    id: 449638, // Updated to correct spell ID
     name: 'Shadow of Death',
+    icon: 'spell_shadow_shadesofdarkness',
+  },
+  SUCCULENT_SOUL_BUFF: {
+    id: 449793, // Similar to Oculus buff for Soul Harvester
+    name: 'Succulent Soul',
     icon: 'spell_shadow_shadesofdarkness',
   },
   DEMONIC_SOUL_DAMAGE: {

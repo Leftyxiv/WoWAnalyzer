@@ -2,6 +2,8 @@ import { formatNumber, formatPercentage } from 'common/format';
 import SPELLS from 'common/SPELLS';
 import RESOURCE_TYPES from 'game/RESOURCE_TYPES';
 import { TIERS } from 'game/TIERS';
+import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
+import ItemSetLink from 'interface/ItemSetLink';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, {
   ApplyBuffEvent,
@@ -63,7 +65,7 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       this.onDemonicSoulStart,
     );
     this.addEventListener(
-      Events.removebuff.from(SELECTED_PLAYER).spell(SPELLS.SHADOW_OF_DEATH_BUFF),
+      Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.SHADOW_OF_DEATH_BUFF),
       this.onDemonicSoulEnd,
     );
     this.addEventListener(
@@ -199,6 +201,10 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
         }
       >
         <BoringSpellValueText spell={SPELLS.SHADOW_OF_DEATH_CAST}>
+          <small>
+            <ItemSetLink id={WARLOCK_TWW3_ID}>TWW Season 3 Tier Set (Soul Harvester)</ItemSetLink>
+          </small>
+          <br />
           <ItemDamageDone amount={this.demonicSoulDamage} />
           <div>
             {formatPercentage(this.demonicSoulUptime)}% <small>Demonic Soul uptime</small>
