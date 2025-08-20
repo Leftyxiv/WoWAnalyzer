@@ -860,11 +860,6 @@ const spells = {
     name: 'Soul Swipe',
     icon: 'inv_ability_soulharvesterwarlock_demonicsoul',
   },
-  SHADOW_OF_DEATH_CAST: {
-    id: 449638,
-    name: 'Shadow of Death',
-    icon: 'spell_shadow_shadesofdarkness',
-  },
   SUCCULENT_SOUL_BUFF: {
     id: 449793,
     name: 'Succulent Soul',

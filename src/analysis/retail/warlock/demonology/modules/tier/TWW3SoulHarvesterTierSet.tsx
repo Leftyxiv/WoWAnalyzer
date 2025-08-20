@@ -6,7 +6,6 @@ import ItemSetLink from 'interface/ItemSetLink';
 import Analyzer, { Options, SELECTED_PLAYER, SELECTED_PLAYER_PET } from 'parser/core/Analyzer';
 import Events, {
   ApplyBuffEvent,
-  CastEvent,
   DamageEvent,
   RefreshBuffEvent,
   RemoveBuffEvent,
@@ -30,7 +29,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
   has2Piece: boolean;
 
   // Tracking for 2pc
-  shadowOfDeathCasts = 0;
   soulSwipeDamage = 0;
   soulSwipeHits = 0;
   succulentSoulActiveTime = 0;
@@ -46,12 +44,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       this.active = false;
       return;
     }
-
-    // 2pc events
-    this.addEventListener(
-      Events.cast.by(SELECTED_PLAYER).spell(SPELLS.SHADOW_OF_DEATH_CAST),
-      this.onShadowOfDeathCast,
-    );
 
     // Track Succulent Soul buff
     this.addEventListener(
@@ -76,10 +68,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       Events.damage.by(SELECTED_PLAYER_PET).spell(SPELLS.SOUL_SWIPE),
       this.onSoulSwipeDamage,
     );
-  }
-
-  onShadowOfDeathCast(event: CastEvent) {
-    this.shadowOfDeathCasts += 1;
   }
 
   onSucculentSoulStart(event: ApplyBuffEvent) {
@@ -128,13 +116,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       0,
     );
     return totalDuration / this.succulentSoulHistory.length / 1000; // Convert to seconds
-  }
-
-  get soulSwipeDamagePerCast() {
-    if (this.shadowOfDeathCasts === 0) {
-      return 0;
-    }
-    return this.soulSwipeDamage / this.shadowOfDeathCasts;
   }
 
   statistic() {
