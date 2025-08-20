@@ -1,6 +1,5 @@
 import { formatPercentage } from 'common/format';
 import SPELLS from 'common/SPELLS';
-import RESOURCE_TYPES from 'game/RESOURCE_TYPES';
 import { TIERS } from 'game/TIERS';
 import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
 import ItemSetLink from 'interface/ItemSetLink';
@@ -11,7 +10,6 @@ import Events, {
   DamageEvent,
   RefreshBuffEvent,
   RemoveBuffEvent,
-  ResourceChangeEvent,
 } from 'parser/core/Events';
 import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
 import ItemDamageDone from 'parser/ui/ItemDamageDone';
@@ -30,7 +28,6 @@ import STATISTIC_ORDER from 'parser/ui/STATISTIC_ORDER';
  */
 class TWW3SoulHarvesterTierSet extends Analyzer {
   has2Piece: boolean;
-  has4Piece: boolean;
 
   // Tracking for 2pc
   shadowOfDeathCasts = 0;
@@ -40,16 +37,10 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
   currentSucculentSoul: { start: number; end: number | null } | null = null;
   succulentSoulHistory: { start: number; end: number }[] = [];
 
-  // Tracking for 4pc
-  shardsGenerated = 0;
-  shardsWasted = 0;
-  shardGenerationEvents: number[] = [];
-
   constructor(options: Options) {
     super(options);
     // Check if player has TWW3 tier set
     this.has2Piece = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
-    this.has4Piece = this.selectedCombatant.has4PieceByTier(TIERS.TWW3);
 
     if (!this.has2Piece) {
       this.active = false;
@@ -85,11 +76,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       Events.damage.by(SELECTED_PLAYER_PET).spell(SPELLS.SOUL_SWIPE),
       this.onSoulSwipeDamage,
     );
-
-    // 4pc events - track soul shard generation
-    if (this.has4Piece) {
-      this.addEventListener(Events.resourcechange.by(SELECTED_PLAYER), this.onResourceChange);
-    }
   }
 
   onShadowOfDeathCast(event: CastEvent) {
@@ -129,27 +115,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
     this.soulSwipeHits += 1;
   }
 
-  onResourceChange(event: ResourceChangeEvent) {
-    // Check if this is a soul shard gain during demonic soul
-    if (
-      event.resourceChangeType === RESOURCE_TYPES.SOUL_SHARDS.id &&
-      event.changeType === 'gain' &&
-      this.currentSucculentSoul
-    ) {
-      // Track the shard generation
-      if (event.resourceChange && event.resourceChange > 0) {
-        const shardsGained = event.resourceChange / 10; // Soul shards are stored as x10
-        this.shardsGenerated += shardsGained;
-        this.shardGenerationEvents.push(event.timestamp);
-
-        // Check for waste (if at max shards)
-        if (event.waste && event.waste > 0) {
-          this.shardsWasted += event.waste / 10;
-        }
-      }
-    }
-  }
-
   get succulentSoulUptime() {
     return this.succulentSoulActiveTime / this.owner.fightDuration;
   }
@@ -170,19 +135,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       return 0;
     }
     return this.soulSwipeDamage / this.shadowOfDeathCasts;
-  }
-
-  get shardsGeneratedPerMinute() {
-    const fightDurationMinutes = this.owner.fightDuration / 60000;
-    return this.shardsGenerated / fightDurationMinutes;
-  }
-
-  get shardWastePercent() {
-    const totalPotentialShards = this.shardsGenerated + this.shardsWasted;
-    if (totalPotentialShards === 0) {
-      return 0;
-    }
-    return this.shardsWasted / totalPotentialShards;
   }
 
   statistic() {

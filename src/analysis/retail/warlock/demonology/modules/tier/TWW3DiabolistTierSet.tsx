@@ -29,7 +29,6 @@ import STATISTIC_ORDER from 'parser/ui/STATISTIC_ORDER';
  */
 class TWW3DiabolistTierSet extends Analyzer {
   has2Piece: boolean;
-  has4Piece: boolean;
 
   // Tracking for 2pc
   oculusSummons = 0;
@@ -39,18 +38,10 @@ class TWW3DiabolistTierSet extends Analyzer {
   handOfGuldanCasts = 0;
   fullPowerHandOfGuldanCasts = 0;
 
-  // Tracking for 4pc
-  intellectBuffStacks = 0;
-  intellectBuffUptime = 0;
-  intellectBuffApplications = 0;
-  intellectBuffHistory: { start: number; end: number | null; stacks: number }[] = [];
-  currentIntellectBuff: { start: number; end: number | null; stacks: number } | null = null;
-
   constructor(options: Options) {
     super(options);
     // Check if player has TWW3 tier set
     this.has2Piece = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
-    this.has4Piece = this.selectedCombatant.has4PieceByTier(TIERS.TWW3);
 
     if (!this.has2Piece) {
       this.active = false;
@@ -90,22 +81,6 @@ class TWW3DiabolistTierSet extends Analyzer {
       Events.damage.by(SELECTED_PLAYER).spell(SPELLS.EYE_BLAST),
       this.onOculusDamage,
     );
-
-    // 4pc events
-    if (this.has4Piece) {
-      this.addEventListener(
-        Events.applybuff.to(SELECTED_PLAYER).spell(SPELLS.OCULUS_INTELLECT_BUFF),
-        this.onIntellectBuffApply,
-      );
-      this.addEventListener(
-        Events.refreshbuff.to(SELECTED_PLAYER).spell(SPELLS.OCULUS_INTELLECT_BUFF),
-        this.onIntellectBuffRefresh,
-      );
-      this.addEventListener(
-        Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.OCULUS_INTELLECT_BUFF),
-        this.onIntellectBuffRemove,
-      );
-    }
   }
 
   onHandOfGuldan(event: CastEvent) {
@@ -142,55 +117,6 @@ class TWW3DiabolistTierSet extends Analyzer {
     this.active = true;
 
     this.oculusDamage += event.amount + (event.absorbed || 0);
-  }
-
-  onIntellectBuffApply(event: ApplyBuffEvent) {
-    this.intellectBuffApplications += 1;
-    this.intellectBuffStacks = 1;
-    this.currentIntellectBuff = {
-      start: event.timestamp,
-      end: null,
-      stacks: 1,
-    };
-    this.intellectBuffHistory.push(this.currentIntellectBuff);
-  }
-
-  onIntellectBuffRefresh(event: RefreshBuffEvent) {
-    this.intellectBuffStacks = Math.min(this.intellectBuffStacks + 1, 10); // Assuming max 10 stacks
-    if (this.currentIntellectBuff) {
-      this.currentIntellectBuff.stacks = this.intellectBuffStacks;
-    }
-  }
-
-  onIntellectBuffRemove(event: RemoveBuffEvent) {
-    if (this.currentIntellectBuff) {
-      this.currentIntellectBuff.end = event.timestamp;
-      this.currentIntellectBuff = null;
-    }
-    this.intellectBuffStacks = 0;
-  }
-
-  get intellectBuffUptimePercent() {
-    let totalUptime = 0;
-    this.intellectBuffHistory.forEach((buff) => {
-      const end = buff.end || this.owner.currentTimestamp;
-      totalUptime += end - buff.start;
-    });
-    return totalUptime / this.owner.fightDuration;
-  }
-
-  get averageIntellectStacks() {
-    let weightedSum = 0;
-    let totalDuration = 0;
-
-    this.intellectBuffHistory.forEach((buff) => {
-      const end = buff.end || this.owner.currentTimestamp;
-      const duration = end - buff.start;
-      weightedSum += buff.stacks * duration;
-      totalDuration += duration;
-    });
-
-    return totalDuration > 0 ? weightedSum / totalDuration : 0;
   }
 
   statistic() {

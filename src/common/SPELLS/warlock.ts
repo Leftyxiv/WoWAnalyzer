@@ -854,11 +854,6 @@ const spells = {
     name: 'Demonic Art',
     icon: 'spell_warlock_demonicportal_green',
   },
-  OCULUS_INTELLECT_BUFF: {
-    id: 457736,
-    name: 'Ocular Analysis',
-    icon: 'spell_warlock_demonicportal_green',
-  },
   // Soul Harvester Hero Talent
   SOUL_SWIPE: {
     id: 1239714,
@@ -866,24 +861,14 @@ const spells = {
     icon: 'inv_ability_soulharvesterwarlock_demonicsoul',
   },
   SHADOW_OF_DEATH_CAST: {
-    id: 449638, // Updated to correct spell ID
+    id: 449638,
     name: 'Shadow of Death',
     icon: 'spell_shadow_shadesofdarkness',
   },
   SUCCULENT_SOUL_BUFF: {
-    id: 449793, // Similar to Oculus buff for Soul Harvester
+    id: 449793,
     name: 'Succulent Soul',
     icon: 'ability_warlock_improvedsoulleech',
-  },
-  DEMONIC_SOUL_DAMAGE: {
-    id: 457739,
-    name: 'Demonic Soul',
-    icon: 'spell_shadow_shadesofdarkness',
-  },
-  SHADOW_OF_DEATH_BUFF: {
-    id: 457737,
-    name: 'Shadow of Death',
-    icon: 'spell_shadow_shadesofdarkness',
   },
 
   // -----------
