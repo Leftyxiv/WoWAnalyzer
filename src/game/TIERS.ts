@@ -15,6 +15,6 @@ export enum TIERS {
   TWW1,
   // Liberation of Undermine
   TWW2,
-  // Manaforge Omega (Ghosts of K'aresh)
+  // Manaforge Omega
   TWW3,
 }
