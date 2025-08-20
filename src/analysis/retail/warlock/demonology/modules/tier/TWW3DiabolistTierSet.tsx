@@ -1,4 +1,4 @@
-import { formatNumber, formatPercentage } from 'common/format';
+import { formatNumber } from 'common/format';
 import SPELLS from 'common/SPELLS';
 import { TIERS } from 'game/TIERS';
 import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
@@ -49,11 +49,11 @@ class TWW3DiabolistTierSet extends Analyzer {
   constructor(options: Options) {
     super(options);
     // Check if player has TWW3 tier set
-    this.active = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
-    this.has2Piece = this.active;
+    this.has2Piece = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
     this.has4Piece = this.selectedCombatant.has4PieceByTier(TIERS.TWW3);
 
-    if (!this.active) {
+    if (!this.has2Piece) {
+      this.active = false;
       return;
     }
 
@@ -138,6 +138,9 @@ class TWW3DiabolistTierSet extends Analyzer {
   }
 
   onOculusDamage(event: DamageEvent) {
+    // Activate this module when we see Eye Blast or Demonic Oculus damage (Diabolist hero talent)
+    this.active = true;
+
     this.oculusDamage += event.amount + (event.absorbed || 0);
   }
 
@@ -191,6 +194,11 @@ class TWW3DiabolistTierSet extends Analyzer {
   }
 
   statistic() {
+    // Only show this statistic if we detected Diabolist hero talent
+    if (!this.active || this.oculusDamage === 0) {
+      return null;
+    }
+
     return (
       <Statistic
         position={STATISTIC_ORDER.OPTIONAL(1)}
@@ -207,17 +215,6 @@ class TWW3DiabolistTierSet extends Analyzer {
             Oculus Summons: {this.oculusSummons}
             <br />
             Total Explosions: {this.oculusExplosions}
-            <br />
-            {this.has4Piece && (
-              <>
-                <br />
-                <strong>4-piece:</strong>
-                <br />
-                Intellect Buff Uptime: {formatPercentage(this.intellectBuffUptimePercent)}%
-                <br />
-                Average Intellect Increase: {(this.averageIntellectStacks * 2).toFixed(1)}%
-              </>
-            )}
           </>
         }
       >
@@ -229,12 +226,6 @@ class TWW3DiabolistTierSet extends Analyzer {
           {formatNumber(this.oculusDamage)} <small>total damage</small>
           <br />
           <ItemDamageDone amount={this.oculusDamage} />
-          {this.has4Piece && (
-            <div>
-              {formatPercentage(this.intellectBuffUptimePercent)}%{' '}
-              <small>Intellect buff uptime</small>
-            </div>
-          )}
         </BoringSpellValueText>
       </Statistic>
     );

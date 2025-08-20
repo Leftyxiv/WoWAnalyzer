@@ -837,7 +837,7 @@ const spells = {
   DEMONIC_OCULUS_BUFF: {
     id: 1238810,
     name: 'Demonic Oculus',
-    icon: 'spell_warlock_demonicportal_green',
+    icon: 'inv_pet_inquisitoreye',
   },
   DEMONIC_OCULUS_EXPLOSION: {
     id: 457548,
@@ -847,7 +847,7 @@ const spells = {
   EYE_BLAST: {
     id: 1239510,
     name: 'Eye Blast',
-    icon: 'spell_warlock_demonicportal_green',
+    icon: 'spell_fire_felflamering',
   },
   DEMONIC_ART_BUFF: {
     id: 457686,
@@ -860,6 +860,11 @@ const spells = {
     icon: 'spell_warlock_demonicportal_green',
   },
   // Soul Harvester Hero Talent
+  SOUL_SWIPE: {
+    id: 1239714,
+    name: 'Soul Swipe',
+    icon: 'inv_ability_soulharvesterwarlock_demonicsoul',
+  },
   SHADOW_OF_DEATH_CAST: {
     id: 449638, // Updated to correct spell ID
     name: 'Shadow of Death',
@@ -868,7 +873,7 @@ const spells = {
   SUCCULENT_SOUL_BUFF: {
     id: 449793, // Similar to Oculus buff for Soul Harvester
     name: 'Succulent Soul',
-    icon: 'spell_shadow_shadesofdarkness',
+    icon: 'ability_warlock_improvedsoulleech',
   },
   DEMONIC_SOUL_DAMAGE: {
     id: 457739,
