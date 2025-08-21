@@ -839,20 +839,10 @@ const spells = {
     name: 'Demonic Oculus',
     icon: 'inv_pet_inquisitoreye',
   },
-  DEMONIC_OCULUS_EXPLOSION: {
-    id: 457548,
-    name: 'Demonic Oculus',
-    icon: 'spell_warlock_demonicportal_green',
-  },
   EYE_BLAST: {
     id: 1239510,
     name: 'Eye Blast',
     icon: 'spell_fire_felflamering',
-  },
-  DEMONIC_ART_BUFF: {
-    id: 457686,
-    name: 'Demonic Art',
-    icon: 'spell_warlock_demonicportal_green',
   },
   // Soul Harvester Hero Talent
   SOUL_SWIPE: {

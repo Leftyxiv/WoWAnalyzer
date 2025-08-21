@@ -8,7 +8,6 @@ import Events, {
   ApplyBuffEvent,
   CastEvent,
   DamageEvent,
-  RefreshBuffEvent,
   RemoveBuffEvent,
 } from 'parser/core/Events';
 import BoringSpellValueText from 'parser/ui/BoringSpellValueText';
@@ -32,7 +31,6 @@ class TWW3DiabolistTierSet extends Analyzer {
 
   // Tracking for 2pc
   oculusSummons = 0;
-  activeOculi = 0;
   oculusExplosions = 0;
   oculusDamage = 0;
   handOfGuldanCasts = 0;
@@ -63,20 +61,6 @@ class TWW3DiabolistTierSet extends Analyzer {
       Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_BUFF),
       this.onOculusExplosion,
     );
-    // Track when Demonic Art is consumed (buff removed from player)
-    this.addEventListener(
-      Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_ART_BUFF),
-      this.onDemonicArtConsume,
-    );
-    // Also track refreshes in case the buff is refreshed rather than removed
-    this.addEventListener(
-      Events.refreshbuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_ART_BUFF),
-      this.onDemonicArtConsume,
-    );
-    this.addEventListener(
-      Events.damage.by(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_EXPLOSION),
-      this.onOculusDamage,
-    );
     this.addEventListener(
       Events.damage.by(SELECTED_PLAYER).spell(SPELLS.EYE_BLAST),
       this.onOculusDamage,
@@ -93,23 +77,11 @@ class TWW3DiabolistTierSet extends Analyzer {
     // Each buff application means a full power (3-shard) Hand of Gul'dan was cast
     this.fullPowerHandOfGuldanCasts += 1;
     this.oculusSummons += 1;
-    this.activeOculi = Math.min(this.activeOculi + 1, 3);
   }
 
   onOculusExplosion(event: RemoveBuffEvent) {
     // When an Oculus buff is removed, it explodes
     this.oculusExplosions += 1;
-    if (this.activeOculi > 0) {
-      this.activeOculi -= 1;
-    }
-  }
-
-  onDemonicArtConsume(event: RemoveBuffEvent | RefreshBuffEvent) {
-    // Track when Demonic Art triggers the explosions
-    if (this.activeOculi > 0) {
-      // Reset active count since they all explode at once
-      this.activeOculi = 0;
-    }
   }
 
   onOculusDamage(event: DamageEvent) {
