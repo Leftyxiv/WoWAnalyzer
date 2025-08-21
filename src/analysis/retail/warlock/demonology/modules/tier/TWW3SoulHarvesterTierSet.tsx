@@ -58,12 +58,7 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
       Events.removebuff.to(SELECTED_PLAYER).spell(SPELLS.SUCCULENT_SOUL_BUFF),
       this.onSucculentSoulEnd,
     );
-    // Track Soul Swipe damage - it might be from a pet or the player
-    this.addEventListener(
-      Events.damage.by(SELECTED_PLAYER).spell(SPELLS.SOUL_SWIPE),
-      this.onSoulSwipeDamage,
-    );
-    // Also listen for pet damage in case Soul Swipe comes from a summoned entity
+    // succulent damage is pet damage
     this.addEventListener(
       Events.damage.by(SELECTED_PLAYER_PET).spell(SPELLS.SOUL_SWIPE),
       this.onSoulSwipeDamage,
