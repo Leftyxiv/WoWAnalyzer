@@ -1,11 +1,13 @@
 import { formatNumber } from 'common/format';
 import SPELLS from 'common/SPELLS';
+import { TALENTS_WARLOCK } from 'common/TALENTS';
 import { TIERS } from 'game/TIERS';
 import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
 import ItemSetLink from 'interface/ItemSetLink';
 import Analyzer, { Options, SELECTED_PLAYER } from 'parser/core/Analyzer';
 import Events, {
   ApplyBuffEvent,
+  ApplyBuffStackEvent,
   CastEvent,
   DamageEvent,
   RemoveBuffEvent,
@@ -38,10 +40,11 @@ class TWW3DiabolistTierSet extends Analyzer {
 
   constructor(options: Options) {
     super(options);
-    // Check if player has TWW3 tier set
+    // Check if player has TWW3 tier set and Diabolist hero talent
     this.has2Piece = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
+    const isDiabolist = this.selectedCombatant.hasTalent(TALENTS_WARLOCK.RUINATION_TALENT);
 
-    if (!this.has2Piece) {
+    if (!this.has2Piece || !isDiabolist) {
       this.active = false;
       return;
     }
@@ -54,6 +57,11 @@ class TWW3DiabolistTierSet extends Analyzer {
     // Track Oculus buff applications (each buff = 1 full power HoG)
     this.addEventListener(
       Events.applybuff.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_BUFF),
+      this.onOculusBuff,
+    );
+    // Also track stack applications
+    this.addEventListener(
+      Events.applybuffstack.to(SELECTED_PLAYER).spell(SPELLS.DEMONIC_OCULUS_BUFF),
       this.onOculusBuff,
     );
     // Track when Oculus buffs are removed (when they explode)
@@ -73,7 +81,7 @@ class TWW3DiabolistTierSet extends Analyzer {
     // Full power casts are tracked via the Oculus buff application
   }
 
-  onOculusBuff(event: ApplyBuffEvent) {
+  onOculusBuff(event: ApplyBuffEvent | ApplyBuffStackEvent) {
     // Each buff application means a full power (3-shard) Hand of Gul'dan was cast
     this.fullPowerHandOfGuldanCasts += 1;
     this.oculusSummons += 1;
@@ -85,15 +93,12 @@ class TWW3DiabolistTierSet extends Analyzer {
   }
 
   onOculusDamage(event: DamageEvent) {
-    // Activate this module when we see Eye Blast or Demonic Oculus damage (Diabolist hero talent)
-    this.active = true;
-
     this.oculusDamage += event.amount + (event.absorbed || 0);
   }
 
   statistic() {
-    // Only show this statistic if we detected Diabolist hero talent
-    if (!this.active || this.oculusDamage === 0) {
+    // Only show this statistic if we have tier set and detected damage
+    if (!this.has2Piece || this.oculusDamage === 0) {
       return null;
     }
 
@@ -105,14 +110,12 @@ class TWW3DiabolistTierSet extends Analyzer {
         tooltip={
           <>
             <strong>2-piece:</strong>
-            <br />
-            Hand of Gul'dan Casts: {this.handOfGuldanCasts}
-            <br />
-            Full Power (3-shard) Casts: {this.fullPowerHandOfGuldanCasts}
-            <br />
-            Oculus Summons: {this.oculusSummons}
-            <br />
-            Total Explosions: {this.oculusExplosions}
+            <ul>
+              <li>Hand of Gul'dan Casts: {this.handOfGuldanCasts}</li>
+              <li>Full Power (3-shard) Casts: {this.fullPowerHandOfGuldanCasts}</li>
+              <li>Oculus Summons: {this.oculusSummons}</li>
+              <li>Total Explosions: {this.oculusExplosions}</li>
+            </ul>
           </>
         }
       >
@@ -120,10 +123,12 @@ class TWW3DiabolistTierSet extends Analyzer {
           <small>
             <ItemSetLink id={WARLOCK_TWW3_ID}>TWW Season 3 Tier Set (Diabolist)</ItemSetLink>
           </small>
-          <br />
-          {formatNumber(this.oculusDamage)} <small>total damage</small>
-          <br />
-          <ItemDamageDone amount={this.oculusDamage} />
+          <div>
+            {formatNumber(this.oculusDamage)} <small>total damage</small>
+          </div>
+          <div>
+            <ItemDamageDone amount={this.oculusDamage} />
+          </div>
         </BoringSpellValueText>
       </Statistic>
     );

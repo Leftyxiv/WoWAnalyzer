@@ -1,5 +1,6 @@
 import { formatPercentage } from 'common/format';
 import SPELLS from 'common/SPELLS';
+import { TALENTS_WARLOCK } from 'common/TALENTS';
 import { TIERS } from 'game/TIERS';
 import { WARLOCK_TWW3_ID } from 'common/ITEMS/dragonflight';
 import ItemSetLink from 'interface/ItemSetLink';
@@ -37,10 +38,13 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
 
   constructor(options: Options) {
     super(options);
-    // Check if player has TWW3 tier set
+    // Check if player has TWW3 tier set and Soul Harvester hero talent
     this.has2Piece = this.selectedCombatant.has2PieceByTier(TIERS.TWW3);
+    const isSoulHarvester = this.selectedCombatant.hasTalent(
+      TALENTS_WARLOCK.SHADOW_OF_DEATH_TALENT,
+    );
 
-    if (!this.has2Piece) {
+    if (!this.has2Piece || !isSoulHarvester) {
       this.active = false;
       return;
     }
@@ -90,9 +94,6 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
   }
 
   onSoulSwipeDamage(event: DamageEvent) {
-    // Activate this module when we see Soul Swipe damage (Soul Harvester hero talent)
-    this.active = true;
-
     const damage = event.amount + (event.absorbed || 0);
     this.soulSwipeDamage += damage;
     this.soulSwipeHits += 1;
@@ -114,8 +115,8 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
   }
 
   statistic() {
-    // Only show this statistic if we detected Soul Harvester hero talent
-    if (!this.active || this.soulSwipeHits === 0) {
+    // Only show this statistic if we have tier set and detected Soul Swipe damage
+    if (!this.has2Piece || this.soulSwipeHits === 0) {
       return null;
     }
 
@@ -127,12 +128,11 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
         tooltip={
           <>
             <strong>2-piece:</strong>
-            <br />
-            Succulent Soul Uptime: {formatPercentage(this.succulentSoulUptime)}%
-            <br />
-            Average Duration: {this.averageSucculentSoulDuration.toFixed(1)}s
-            <br />
-            Soul Swipe Hits: {this.soulSwipeHits}
+            <ul>
+              <li>Succulent Soul Uptime: {formatPercentage(this.succulentSoulUptime)}%</li>
+              <li>Average Duration: {this.averageSucculentSoulDuration.toFixed(1)}s</li>
+              <li>Soul Swipe Hits: {this.soulSwipeHits}</li>
+            </ul>
           </>
         }
       >
@@ -140,8 +140,9 @@ class TWW3SoulHarvesterTierSet extends Analyzer {
           <small>
             <ItemSetLink id={WARLOCK_TWW3_ID}>TWW Season 3 Tier Set (Soul Harvester)</ItemSetLink>
           </small>
-          <br />
-          <ItemDamageDone amount={this.soulSwipeDamage} />
+          <div>
+            <ItemDamageDone amount={this.soulSwipeDamage} />
+          </div>
           <div>
             {formatPercentage(this.succulentSoulUptime)}% <small>Succulent Soul uptime</small>
           </div>
